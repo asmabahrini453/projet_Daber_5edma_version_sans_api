@@ -49,6 +49,29 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    
     <a asp-action="Index">Back to List</a>
+    @if (ViewBag.Candidat != null)
+    {
+        <form asp-controller="JobApplications" asp-action="Create" method="post">
+            <input type="hidden" name="JobOfferId" value="@Model.Id" />
+            <input type="submit" class="btn btn-primary" value="Apply" />
+        </form>
+    }
+    @if (ViewBag.Companie != null)
+    {
+
+
+        @if (ViewBag.Companie == Model.CompanyId)
+        {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+
+        }
+
+
+        <form asp-controller="JobOffers" asp-action="Candidate_list">
+            <input type="hidden" name="id" value=@Model.Id />
+            <input type="submit" class="btn btn-primary" value="List Condidats" />
+        </form>
+    }
 </div>

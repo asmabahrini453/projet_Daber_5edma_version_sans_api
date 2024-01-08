@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using projet_Daber_5edma_version_sans_api.Models;
 
 namespace projet_Daber_5edma_version_sans_api.Models
 {
@@ -97,5 +98,7 @@ namespace projet_Daber_5edma_version_sans_api.Models
                 .WithMany(o => o.JobApplications)
                 .HasForeignKey(a => a.JobOfferId);
         }
+
+        public DbSet<projet_Daber_5edma_version_sans_api.Models.Candidat_Application>? Candidat_Application { get; set; }
         }
 }

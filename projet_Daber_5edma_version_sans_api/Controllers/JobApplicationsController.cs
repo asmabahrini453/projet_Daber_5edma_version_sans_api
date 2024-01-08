@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -46,29 +47,31 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
         }
 
         // GET: JobApplications/Create
-        public IActionResult Create()
-        {
-            ViewData["CandidatId"] = new SelectList(_context.Candidats, "Id", "Education");
-            ViewData["JobOfferId"] = new SelectList(_context.JobOffers, "Id", "Description");
-            return View();
-        }
+        //public IActionResult Create()
+        //{
+        //    return View();
+        //}
 
         // POST: JobApplications/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Status,CandidatId,JobOfferId")] JobApplication jobApplication)
+        public async Task<IActionResult> Create(int JobOfferId, JobApplication jobApplication)
         {
-            if (ModelState.IsValid)
+            if (HttpContext.Session.GetInt32("Candidat") != null)
             {
+                jobApplication.CandidatId = (int)HttpContext.Session.GetInt32("Candidat");
+                
+            }
+            
+            jobApplication.JobOfferId = JobOfferId;
+            jobApplication.Status = "Processing";
+
                 _context.Add(jobApplication);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CandidatId"] = new SelectList(_context.Candidats, "Id", "Education", jobApplication.CandidatId);
-            ViewData["JobOfferId"] = new SelectList(_context.JobOffers, "Id", "Description", jobApplication.JobOfferId);
-            return View(jobApplication);
+                return RedirectToAction("Index", "Home");
+  
         }
 
         // GET: JobApplications/Edit/5
@@ -164,6 +167,29 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        //***************************
+        [HttpPost]
+        public async Task<IActionResult> ModifSatut(int JobOfferId, string result)
+        {
+            var jobApplication = await _context.JobApplications.FindAsync(JobOfferId);
+
+
+            if (jobApplication == null)
+            {
+                return NotFound();
+            }
+
+            jobApplication.Status = result;
+            _context.JobApplications.Update(jobApplication);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction("Index", "JobOffers");
+        }
+
+        //*******************************
+
+
 
         private bool JobApplicationExists(int id)
         {

@@ -5,18 +5,45 @@
 }
 
 
-<h1>Home-Index</h1>
+@if (ViewBag.connect != 1)
+{
+    <section class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">Daber 5edma</h1>
+            <p>
+                <a asp-controller="Companies" asp-action="Login" class="btn btn-primary my-2">Company</a>
+                <a asp-controller="Candidats" asp-action="Login" class="btn btn-secondary my-2">Candidat</a>
+            </p>
+        </div>
+    </section>
+}
+else
+{
+     <a asp-controller="Companies" asp-action="logout" class="btn btn-primary my-2">Lougout</a>
+}
 
-<!-- Adding bootstrap here -->
-<section class="jumbotron text-center">
-    <div class="container">
-        <h1 class="jumbotron-heading">Daber 5edma</h1>
-        <p>
-            <a asp-controller="Companies" asp-action="Index" class="btn btn-primary my-2">Company</a>
-            <a asp-controller="Candidats" asp-action="Login" class="btn btn-secondary my-2">Candidat</a>
-        </p>
-    </div>
-</section>
+@if (ViewBag.Companie!= null)
+{
+    <a asp-controller="JobOffers" action="Index" class="btn btn-primary my-2">My List Offers</a>
+
+    <form asp-controller="Companies" asp-action="details" asp-route-id="@ViewBag.Companie">
+        <input type="submit" class="btn btn-primary" value="My Profile" />
+    </form>
+}else if (ViewBag.Candidat != null)
+{
+    <form asp-controller="Candidats" asp-action="details" asp-route-id="@ViewBag.Candidat">
+        <input type="submit" class="btn btn-primary" value="My Profile" />
+    </form>
+
+
+    <form asp-controller="Candidats" asp-action="Offer_app_list">
+        <input type="hidden" name="id" value=@ViewBag.Candidat />
+        <input type="submit" class="btn btn-primary" value="My Applications"/>
+    </form>
+    <a asp-controller="JobOffers" action="Index" class="btn btn-primary my-2">job Offers</a>
+
+}
+
 
 <div class="row">
     @foreach (var item in Model)
@@ -27,7 +54,7 @@
                     <h5 class="card-title">@item.Title</h5>
                     <p class="card-text"><span>Description:  </span>@item.Description</p>
                     <p class="card-text"><span>Speciality:  </span>@item.Speciality</p>
-                    <p class="card-text"><span>CompanyId:  </span>@item.CompanyId</p>
+                    <p class="card-text"><span>CompanyId:  </span>@item.Company.Name</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
                             <a asp-controller="JobOffers" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">View</a>

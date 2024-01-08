@@ -61,7 +61,7 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
             {
                 _context.Add(company);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Home");
             }
             return View(company);
         }
@@ -112,7 +112,7 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Home");
             }
             return View(company);
         }
@@ -154,6 +154,37 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //************************************************************************
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(string email, string password)
+        {
+            var companie = _context.Companies.SingleOrDefault(u => u.Email == email && u.Password == password);
+            if (companie != null)
+            {
+                HttpContext.Session.SetInt32("Companie", companie.Id);
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return BadRequest(new { message = "Username or password is incorrect" });
+            }
+        }
+        //************************************************************************
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("Companie");
+            HttpContext.Session.Remove("Candidat");
+            return RedirectToAction("Index", "Home");
+
+        }
+        //************************************************************************
         private bool CompanyExists(int id)
         {
           return (_context.Companies?.Any(e => e.Id == id)).GetValueOrDefault();

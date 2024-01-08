@@ -1,0 +1,79 @@
+﻿@model IEnumerable<projet_Daber_5edma_version_sans_api.Models.Candidat_JobOffer>
+
+@{
+    ViewData["Title"] = "Candidate_list";
+}
+
+<h1>Candidates list</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <h5>name</h5>
+            </th>
+            <th>
+                <h5>Email</h5>
+            </th>
+            <th>
+                <h5>Phone Number
+            </th>
+            <th>
+                <h5>DateNaiss</h5>
+            </th>
+            <th>
+                <h5>Speciality</h5>
+            </th>
+            <th>
+                <h5>Experience</h5>
+            </th>
+            <th>
+                <h5>Education</h5>
+            </th>
+            <th>
+                <h5>Status</h5>
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.cName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cTel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cDateNaiss)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cSpeciality)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cExperience)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cEducation)
+            </td>
+            <td>
+                    <form asp-controller="JobApplications" asp-action="ModifSatut">
+                    <input type="hidden" name="JobOfferId" value="@item.jaId" />
+                    <select name="result">
+                        <option value="@item.jaStatus">@item.jaStatus</option>
+                        <option value="Accept">Accept</option>
+                        <option value="Refuse">Refuse</option>
+                    </select>
+                            <input type="submit" value="Modify" class="btn btn-primary" />
+                   </form>
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -4,11 +4,13 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
+<h1>Job Offer</h1>
+@if (ViewBag.Companie!=null){
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary" >Create New Job Offer</a>
 </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -52,12 +54,14 @@
                 @Html.DisplayFor(modelItem => item.Location)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Company.Description)
+                @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @if (ViewBag.Companie!= null) { 
+                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> 
+                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>}
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                
             </td>
         </tr>
 }

@@ -20,6 +20,23 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
 
         public async Task<IActionResult> Index()  // Add async Task<>
         {
+
+            var CandidatID = HttpContext.Session.GetInt32("Candidat");
+            var CompanieID = HttpContext.Session.GetInt32("Companie");
+            if  ((CandidatID != null) || (CompanieID != null)) 
+            {
+                ViewBag.connect = 1;
+            }
+
+            if ((CompanieID != null))
+            {
+                ViewBag.Companie = CompanieID;
+            }
+
+            if ((CandidatID != null))
+            {
+                ViewBag.Candidat = CandidatID;
+            }
             var jobOffers = await _context.JobOffers.Include(j => j.Company).ToListAsync();  // Use ToListAsync() instead of ToList()
             return View(jobOffers);  // Pass the jobOffers directly to the view
         }

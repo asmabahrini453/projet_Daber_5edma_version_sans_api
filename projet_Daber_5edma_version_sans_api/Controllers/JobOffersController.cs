@@ -21,9 +21,21 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
         // GET: JobOffers
         public async Task<IActionResult> Index()
         {
+            var companies_id = HttpContext.Session.GetInt32("Companie");
+            ViewBag.Companie = companies_id;
+
+            if (companies_id != null) {
+                var appDbContext1 = _context.JobOffers.Include(j => j.Company).Where(j => j.CompanyId == companies_id);
+                return View(await appDbContext1.ToListAsync());
+            }
+
+            // Filtrer les JobOffers par CompanyId
             var appDbContext = _context.JobOffers.Include(j => j.Company);
-            return View(await appDbContext.ToListAsync());
+                return View(await appDbContext.ToListAsync());
+            
+            
         }
+    
 
         // GET: JobOffers/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -33,9 +45,13 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
                 return NotFound();
             }
 
+            ViewBag.Companie= HttpContext.Session.GetInt32("Companie");
+            ViewBag.Candidat = HttpContext.Session.GetInt32("Candidat");
+
             var jobOffer = await _context.JobOffers
                 .Include(j => j.Company)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (jobOffer == null)
             {
                 return NotFound();
@@ -44,28 +60,71 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
             return View(jobOffer);
         }
 
+
+        //***********************************************************************
+        [HttpPost]
+        public async Task<IActionResult> Candidate_list(int id )
+        {    
+            if (id == null || _context.JobOffers == null)
+            {
+
+                return NotFound();
+            }
+
+            var l = from c in _context.Candidats
+                    join ja in _context.JobApplications on c.Id equals ja.CandidatId
+                    join jo in _context.JobOffers on ja.JobOfferId equals jo.Id
+                    where jo.Id == id
+                    select new Candidat_JobOffer
+                    {
+                        cName = c.Name,
+                        cSpeciality = c.Speciality,
+                        cExperience = c.Experience,
+                        cEducation = c.Education,
+                        cTel = c.Tel,
+                        cEmail = c.Email,
+                        cDateNaiss = c.DateNaiss,
+                        jaStatus = ja.Status,
+                        jaId = ja.Id
+                    };
+
+            if (l == null)
+            {
+                return NotFound();
+            }
+
+            return View(l);
+        }
+        //***********************************************************************
         // GET: JobOffers/Create
         public IActionResult Create()
         {
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description");
+           // ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description");
+            ViewBag.companie_id = HttpContext.Session.GetInt32("Companie");
             return View();
         }
 
         // POST: JobOffers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,PostedDate,Speciality,Location,CompanyId")] JobOffer jobOffer)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,PostedDate,Speciality,Location")] JobOffer jobOffer)
         {
+            if (HttpContext.Session.GetInt32("Companie") != null)
+            {
+                jobOffer.CompanyId = (int)HttpContext.Session.GetInt32("Companie");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(jobOffer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Description", jobOffer.CompanyId);
             return View(jobOffer);
+           
         }
 
         // GET: JobOffers/Edit/5
@@ -90,7 +149,7 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,PostedDate,Speciality,Location,CompanyId")] JobOffer jobOffer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,PostedDate,Speciality,Location")] JobOffer jobOffer)
         {
             if (id != jobOffer.Id)
             {
@@ -101,6 +160,7 @@ namespace projet_Daber_5edma_version_sans_api.Controllers
             {
                 try
                 {
+                    jobOffer.CompanyId = (int)HttpContext.Session.GetInt32("Companie");
                     _context.Update(jobOffer);
                     await _context.SaveChangesAsync();
                 }
